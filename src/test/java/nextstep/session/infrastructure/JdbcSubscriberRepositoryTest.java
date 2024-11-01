@@ -1,9 +1,6 @@
 package nextstep.session.infrastructure;
 
-import nextstep.session.domain.Session;
-import nextstep.session.domain.SessionRepository;
-import nextstep.session.domain.Subscriber;
-import nextstep.session.domain.SubscriberRepository;
+import nextstep.session.domain.*;
 import nextstep.session.domain.image.Image;
 import nextstep.support.TestSupport;
 import nextstep.users.domain.NsUser;
@@ -33,7 +30,7 @@ class JdbcSubscriberRepositoryTest extends TestSupport {
         LocalDateTime endDate = LocalDateTime.parse("2023-05-05T00:00:00");
 
         Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
-        Session session = Session.createPaid(1L, "테스트강의", List.of(image), 1, 800000, startDate, endDate);
+        Session session = Session.createPaid(1L, "테스트강의", List.of(image), PickSession.NON_PICK, 1, 800000, startDate, endDate);
 
         sessionRepository.save(session);
 

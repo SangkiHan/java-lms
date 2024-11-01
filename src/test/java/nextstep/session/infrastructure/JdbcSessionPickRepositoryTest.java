@@ -1,8 +1,11 @@
 package nextstep.session.infrastructure;
 
+import nextstep.session.domain.SessionPick;
+import nextstep.session.domain.SessionPickRepository;
 import nextstep.session.domain.*;
 import nextstep.session.domain.image.Image;
 import nextstep.support.TestSupport;
+import nextstep.users.domain.NsUser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,16 +14,20 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.groups.Tuple.tuple;
 
-class JdbcSessionRepositoryTest extends TestSupport {
+class JdbcSessionPickRepositoryTest extends TestSupport {
 
+    public static final NsUser JAVAJIGI = new NsUser(1L, "javajigi", "password", "name", "javajigi@slipp.net");
+
+    @Autowired
+    private SessionPickRepository sessionPickRepository;
     @Autowired
     private SessionRepository sessionRepository;
 
-    @DisplayName("강의를 저장 후 조회한다.")
+    @DisplayName("강의 승인자를 저장한 후 조회한다.")
     @Test
     void saveTest() {
+        //given
         LocalDateTime startDate = LocalDateTime.parse("2023-04-05T00:00:00");
         LocalDateTime endDate = LocalDateTime.parse("2023-05-05T00:00:00");
 
@@ -29,12 +36,15 @@ class JdbcSessionRepositoryTest extends TestSupport {
 
         sessionRepository.save(session);
 
-        assertThat(sessionRepository.findById(session.getId()))
-                .extracting("id", "title", "paymentType", "subscribeStatus", "subscribeMax", "price", "dateRange.startDate", "dateRange.endDate")
-                .containsExactly(1L, "테스트강의", PaymentType.PAID, SubscribeStatus.READY, 1, 800000, startDate, endDate);
+        Session findSession = sessionRepository.findById(1L);
 
-        assertThat(session.getImage())
-                .extracting("sessionId", "name", "size.width.width", "size.height.height", "capacity.capacity")
-                .containsExactly(tuple(1L, "테스트이미지.jpg", 300, 200, 1));
+        SessionPick sessionPick = new SessionPick(findSession, JAVAJIGI);
+
+        //when, then
+        sessionPickRepository.save(sessionPick);
+
+        assertThat(sessionPickRepository.findById(1L))
+                .extracting("sessionId", "nsUser.id")
+                .containsExactly(findSession.getId(), JAVAJIGI.getId());
     }
 }

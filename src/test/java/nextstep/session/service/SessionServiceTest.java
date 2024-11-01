@@ -1,6 +1,7 @@
 package nextstep.session.service;
 
 import nextstep.session.domain.PaymentType;
+import nextstep.session.domain.PickSession;
 import nextstep.session.domain.Session;
 import nextstep.session.domain.SubscribeStatus;
 import nextstep.session.domain.image.Image;
@@ -29,7 +30,7 @@ class SessionServiceTest extends TestSupport {
     void setUp() {
         Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
 
-        Session session = Session.createPaid(1L, "테스트강의", List.of(image), 1, 800000, startDate, endDate);
+        Session session = Session.createPaid(1L, "테스트강의", List.of(image), PickSession.NON_PICK, 1, 800000, startDate, endDate);
 
         sessionService.save(session);
     }
