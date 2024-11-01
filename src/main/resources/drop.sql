@@ -1,3 +1,4 @@
+drop table session_pick;
 drop table image;
 drop table subscriber;
 drop table course;
