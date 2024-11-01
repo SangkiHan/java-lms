@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
@@ -22,8 +23,8 @@ class SubscribersTest {
         LocalDateTime startDate = LocalDateTime.parse("2023-04-05T00:00:00");
         LocalDateTime endDate = LocalDateTime.parse("2023-05-05T00:00:00");
 
-        Image image = new Image("테스트이미지.jpg", 300, 200, 1);
-        Session session = Session.createPaid(1L, "테스트강의", image, 1, 800000, startDate, endDate);
+        Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
+        Session session = Session.createPaid(1L, "테스트강의", List.of(image), 1, 800000, startDate, endDate);
 
         //when
         subscribers.addUser(session, JAVAJIGI);
@@ -41,8 +42,8 @@ class SubscribersTest {
         LocalDateTime startDate = LocalDateTime.parse("2023-04-05T00:00:00");
         LocalDateTime endDate = LocalDateTime.parse("2023-05-05T00:00:00");
 
-        Image image = new Image("테스트이미지.jpg", 300, 200, 1);
-        Session session = Session.createPaid(1L, "테스트강의", image, 1, 800000, startDate, endDate);
+        Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
+        Session session = Session.createPaid(1L, "테스트강의", List.of(image), 1, 800000, startDate, endDate);
 
         //when
         subscribers.addUser(session, JAVAJIGI);

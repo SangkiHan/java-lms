@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
@@ -52,7 +53,7 @@ public class CourseTest {
         LocalDateTime startDate = LocalDateTime.parse("2023-04-05T00:00:00");
         LocalDateTime endDate = LocalDateTime.parse("2023-05-05T00:00:00");
 
-        Image image = new Image("테스트이미지.jpg", 300, 200, 1);
-        return Session.createFree((long) id, "테스트강의", image, startDate, endDate);
+        Image image = new Image((long) id, "테스트이미지.jpg", 300, 200, 1);
+        return Session.createFree((long) id, "테스트강의", List.of(image), startDate, endDate);
     }
 }

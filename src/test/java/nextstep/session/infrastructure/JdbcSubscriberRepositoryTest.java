@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,8 +32,8 @@ class JdbcSubscriberRepositoryTest extends TestSupport {
         LocalDateTime startDate = LocalDateTime.parse("2023-04-05T00:00:00");
         LocalDateTime endDate = LocalDateTime.parse("2023-05-05T00:00:00");
 
-        Image image = new Image("테스트이미지.jpg", 300, 200, 1);
-        Session session = Session.createPaid(1L, "테스트강의", image, 1, 800000, startDate, endDate);
+        Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
+        Session session = Session.createPaid(1L, "테스트강의", List.of(image), 1, 800000, startDate, endDate);
 
         sessionRepository.save(session);
 
@@ -43,7 +44,7 @@ class JdbcSubscriberRepositoryTest extends TestSupport {
         //when, then
         subscriberRepository.save(subscriber);
         assertThat(subscriberRepository.findById(1L))
-                .extracting("session.id", "nsUser.id")
+                .extracting("sessionId", "nsUser.id")
                 .containsExactly(findSession.getId(), JAVAJIGI.getId());
     }
 }

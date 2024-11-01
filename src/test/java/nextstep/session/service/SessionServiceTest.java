@@ -5,14 +5,17 @@ import nextstep.session.domain.Session;
 import nextstep.session.domain.SubscribeStatus;
 import nextstep.session.domain.image.Image;
 import nextstep.support.TestSupport;
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.groups.Tuple.tuple;
 
 class SessionServiceTest extends TestSupport {
 
@@ -24,8 +27,9 @@ class SessionServiceTest extends TestSupport {
 
     @BeforeEach
     void setUp() {
-        Image image = new Image("테스트이미지.jpg", 300, 200, 1);
-        Session session = Session.createPaid(1L, "테스트강의", image, 1, 800000, startDate, endDate);
+        Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
+
+        Session session = Session.createPaid(1L, "테스트강의", List.of(image), 1, 800000, startDate, endDate);
 
         sessionService.save(session);
     }
@@ -33,9 +37,14 @@ class SessionServiceTest extends TestSupport {
     @DisplayName("강의를 저장한다 후 조회한다.")
     @Test
     void saveTest() {
-        assertThat(sessionService.findById(1L))
-                .extracting("id", "title", "paymentType", "subscribeStatus", "subscribeMax", "price", "dateRange.startDate", "dateRange.endDate", "image.name", "image.size.width.width", "image.size.height.height", "image.capacity.capacity")
-                .contains(1L, "테스트강의", PaymentType.PAID, SubscribeStatus.READY, 1, 800000, startDate, endDate, "테스트이미지.jpg", 300, 200, 1);
+        Session session = sessionService.findById(1L);
+        assertThat(session)
+                .extracting("id", "title", "paymentType", "subscribeStatus", "subscribeMax", "price", "dateRange.startDate", "dateRange.endDate")
+                .contains(1L, "테스트강의", PaymentType.PAID, SubscribeStatus.READY, 1, 800000, startDate, endDate);
+
+        assertThat(session.getImage())
+                .extracting("sessionId", "name", "size.width.width", "size.height.height", "capacity.capacity")
+                .containsExactly(tuple(1L, "테스트이미지.jpg", 300, 200, 1));
     }
 
     @DisplayName("강의의 상태를 변경한다.")
@@ -43,9 +52,15 @@ class SessionServiceTest extends TestSupport {
     void changeSubscribeStatusTest() {
         sessionService.changeSubscribeStatus(1L, SubscribeStatus.WAIT);
 
-        assertThat(sessionService.findById(1L))
-                .extracting("id", "title", "paymentType", "subscribeStatus", "subscribeMax", "price", "dateRange.startDate", "dateRange.endDate", "image.name", "image.size.width.width", "image.size.height.height", "image.capacity.capacity")
-                .contains(1L, "테스트강의", PaymentType.PAID, SubscribeStatus.WAIT, 1, 800000, startDate, endDate, "테스트이미지.jpg", 300, 200, 1);
+        Session session = sessionService.findById(1L);
+
+        assertThat(session)
+                .extracting("id", "title", "paymentType", "subscribeStatus", "subscribeMax", "price", "dateRange.startDate", "dateRange.endDate")
+                .contains(1L, "테스트강의", PaymentType.PAID, SubscribeStatus.WAIT, 1, 800000, startDate, endDate);
+
+        assertThat(session.getImage())
+                .extracting("sessionId", "name", "size.width.width", "size.height.height", "capacity.capacity")
+                .containsExactly(tuple(1L, "테스트이미지.jpg", 300, 200, 1));
     }
 
 }
