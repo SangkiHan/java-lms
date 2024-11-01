@@ -8,19 +8,19 @@ import java.time.LocalDateTime;
 public class Subscriber {
 
     private Long id;
-    private Session session;
+    private Long sessionId;
     private NsUser nsUser;
     private DateDomain dateDomain;
 
     public Subscriber(Session session, NsUser nsUser) {
-        this.session = session;
+        this.sessionId = session.getId();
         this.nsUser = nsUser;
         this.dateDomain = new DateDomain();
     }
 
-    public Subscriber(Long id, Session session, NsUser nsUser, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Subscriber(Long id, Long sessionId, NsUser nsUser, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
-        this.session = session;
+        this.sessionId = sessionId;
         this.nsUser = nsUser;
         this.dateDomain = new DateDomain(createdAt, updatedAt);
     }
@@ -43,7 +43,7 @@ public class Subscriber {
         return dateDomain;
     }
 
-    public Session getSession() {
-        return session;
+    public Long getSessionId() {
+        return sessionId;
     }
 }
