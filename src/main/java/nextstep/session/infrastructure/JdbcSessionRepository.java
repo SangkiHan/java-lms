@@ -1,9 +1,6 @@
 package nextstep.session.infrastructure;
 
-import nextstep.session.domain.Session;
-import nextstep.session.domain.SessionRepository;
-import nextstep.session.domain.SubscribeStatus;
-import nextstep.session.domain.Subscriber;
+import nextstep.session.domain.*;
 import nextstep.session.domain.image.Image;
 import nextstep.users.domain.NsUser;
 import org.springframework.jdbc.core.JdbcOperations;
@@ -23,10 +20,11 @@ public class JdbcSessionRepository implements SessionRepository {
     }
     @Override
     public int save(Session session) {
-        String sql = "insert into session (title, paymentType, subscribeStatus, subscribeMax, price, start_date, end_date, created_at, updated_at) values(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "insert into session (title, paymentType, pickSession, subscribeStatus, subscribeMax, price, start_date, end_date, created_at, updated_at) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         return jdbcTemplate.update(sql,
                 session.getTitle(),
                 session.getPaymentType().name(),
+                session.getPickSession().name(),
                 session.getSubscribeStatus().name(),
                 session.getSubscribeMax(),
                 session.getPrice(),
@@ -39,20 +37,22 @@ public class JdbcSessionRepository implements SessionRepository {
 
     @Override
     public Session findById(Long id) {
-        String sql = "select id, title, paymentType, subscribeStatus, subscribeMax, price, start_date, end_date, created_at, updated_at from session where id = ?";
+        String sql = "select id, title, paymentType, pickSession, subscribeStatus, subscribeMax, price, start_date, end_date, created_at, updated_at from session where id = ?";
         RowMapper<Session> rowMapper = (rs, rowNum) -> new Session(
                 rs.getLong(1),
                 rs.getString(2),
                 rs.getString(3),
                 rs.getString(4),
-                rs.getInt(5),
+                rs.getString(5),
                 rs.getInt(6),
-                toLocalDateTime(rs.getTimestamp(7)),
+                rs.getInt(7),
                 toLocalDateTime(rs.getTimestamp(8)),
-                findImageBySessionId(rs.getLong(1)),
-                findSubscriberBySessionId(rs.getLong(1)),
                 toLocalDateTime(rs.getTimestamp(9)),
-                toLocalDateTime(rs.getTimestamp(10)));
+                findImageBySessionId(rs.getLong(1)),
+                findSessionPickBySessionId(rs.getLong(1)),
+                findSubscriberBySessionId(rs.getLong(1)),
+                toLocalDateTime(rs.getTimestamp(10)),
+                toLocalDateTime(rs.getTimestamp(11)));
 
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
@@ -86,6 +86,18 @@ public class JdbcSessionRepository implements SessionRepository {
         String sql = "select id, session_id, ns_user_id, created_at, updated_at from subscriber where session_id = ?";
         RowMapper<Subscriber> rowMapper = (rs, rowNum) -> new Subscriber(
                 rs.getLong(1),
+                findUserById(rs.getLong(3)),
+                toLocalDateTime(rs.getTimestamp(4)),
+                toLocalDateTime(rs.getTimestamp(5)));
+
+        return jdbcTemplate.query(sql, rowMapper, sessionId);
+    }
+
+    private List<SessionPick> findSessionPickBySessionId(Long sessionId) {
+        String sql = "select id, session_id, ns_user_id, created_at, updated_at from session_pick where session_id = ?";
+        RowMapper<SessionPick> rowMapper = (rs, rowNum) -> new SessionPick(
+                rs.getLong(1),
+                rs.getLong(2),
                 findUserById(rs.getLong(3)),
                 toLocalDateTime(rs.getTimestamp(4)),
                 toLocalDateTime(rs.getTimestamp(5)));

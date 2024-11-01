@@ -1,7 +1,7 @@
 package nextstep.session.infrastructure;
 
-import nextstep.session.domain.Subscriber;
-import nextstep.session.domain.SubscriberRepository;
+import nextstep.session.domain.SessionPick;
+import nextstep.session.domain.SessionPickRepository;
 import nextstep.users.domain.NsUser;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
@@ -10,30 +10,30 @@ import org.springframework.stereotype.Repository;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
-@Repository("subscriberRepository")
-public class JdbcSubscriberRepository implements SubscriberRepository {
+@Repository("sessionPickRepository")
+public class JdbcSessionPickRepository implements SessionPickRepository {
 
     private JdbcOperations jdbcTemplate;
 
-    public JdbcSubscriberRepository(JdbcOperations jdbcTemplate) {
+    public JdbcSessionPickRepository(JdbcOperations jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public int save(Subscriber subscriber) {
-        String sql = "insert into subscriber (session_id, ns_user_id, created_at, updated_at) values(?, ?, ?, ?)";
+    public int save(SessionPick sessionPick) {
+        String sql = "insert into session_pick (session_id, ns_user_id, created_at, updated_at) values(?, ?, ?, ?)";
         return jdbcTemplate.update(sql,
-                subscriber.getSessionId(),
-                subscriber.getNsUser().getId(),
-                subscriber.getDateDomain().getCreatedAt(),
-                subscriber.getDateDomain().getUpdatedAt()
+                sessionPick.getSessionId(),
+                sessionPick.getNsUser().getId(),
+                sessionPick.getDateDomain().getCreatedAt(),
+                sessionPick.getDateDomain().getUpdatedAt()
         );
     }
 
     @Override
-    public Subscriber findById(Long id) {
-        String sql = "select id, session_id, ns_user_id, created_at, updated_at from subscriber where id = ?";
-        RowMapper<Subscriber> rowMapper = (rs, rowNum) -> new Subscriber(
+    public SessionPick findById(Long id) {
+        String sql = "select id, session_id, ns_user_id, created_at, updated_at from session_pick where id = ?";
+        RowMapper<SessionPick> rowMapper = (rs, rowNum) -> new SessionPick(
                 rs.getLong(1),
                 rs.getLong(2),
                 findUserById(rs.getLong(3)),
