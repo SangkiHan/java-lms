@@ -1,3 +1,4 @@
+drop table image;
 drop table subscriber;
 drop table course;
 drop table session;
