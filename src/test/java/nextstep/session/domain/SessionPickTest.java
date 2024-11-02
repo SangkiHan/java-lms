@@ -22,7 +22,7 @@ class SessionPickTest {
         LocalDateTime endDate = LocalDateTime.parse("2023-05-05T00:00:00");
 
         Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
-        Session session = Session.createPaid(1L, "테스트강의", List.of(image), PickSession.NON_PICK, 1, 800000, startDate, endDate);
+        Session session = Session.createPaid(1L, "테스트강의", List.of(image), 1, 800000, startDate, endDate);
 
         //when
         SessionPick sessionPick = new SessionPick(session, JAVAJIGI);
@@ -40,7 +40,7 @@ class SessionPickTest {
         LocalDateTime endDate = LocalDateTime.parse("2023-05-05T00:00:00");
 
         Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
-        Session session = Session.createPaid(1L, "테스트강의", List.of(image), PickSession.NON_PICK, 1, 800000, startDate, endDate);
+        Session session = Session.createPaid(1L, "테스트강의", List.of(image), 1, 800000, startDate, endDate);
 
         //when
         SessionPick sessionPick = new SessionPick(session, JAVAJIGI);

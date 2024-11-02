@@ -2,7 +2,6 @@ package nextstep.session.service;
 
 import nextstep.session.RecruitmentStatus;
 import nextstep.session.domain.PaymentType;
-import nextstep.session.domain.PickSession;
 import nextstep.session.domain.Session;
 import nextstep.session.domain.SessionStatus;
 import nextstep.session.domain.image.Image;
@@ -30,7 +29,7 @@ class SessionServiceTest extends TestSupport {
     void setUp() {
         Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
 
-        Session session = Session.createPaid(1L, "테스트강의", List.of(image), PickSession.NON_PICK, 1, 800000, startDate, endDate);
+        Session session = Session.createPaid(1L, "테스트강의", List.of(image), 1, 800000, startDate, endDate);
 
         sessionService.save(session);
     }
@@ -73,7 +72,7 @@ class SessionServiceTest extends TestSupport {
 
         assertThat(session)
                 .extracting("id", "title", "paymentType", "recruitmentStatus", "sessionStatus", "subscribeMax", "price", "dateRange.startDate", "dateRange.endDate")
-                .contains(1L, "테스트강의", PaymentType.PAID, SessionStatus.READY, RecruitmentStatus.RECRUIT ,1, 800000, startDate, endDate);
+                .contains(1L, "테스트강의", PaymentType.PAID, SessionStatus.READY, RecruitmentStatus.RECRUIT, 1, 800000, startDate, endDate);
 
         assertThat(session.getImage())
                 .extracting("sessionId", "name", "size.width.width", "size.height.height", "capacity.capacity")

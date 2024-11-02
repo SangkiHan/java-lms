@@ -1,5 +1,7 @@
 package nextstep.session.service;
 
+import nextstep.session.RecruitmentStatus;
+import nextstep.session.domain.ApproveStatus;
 import nextstep.session.domain.PickSession;
 import nextstep.session.domain.Session;
 import nextstep.session.domain.SessionStatus;
@@ -22,6 +24,8 @@ class SubscriberServiceTest extends TestSupport {
     private SubscriberService subscriberService;
     @Autowired
     private SessionService sessionService;
+    @Autowired
+    private SessionPickService sessionPickService;
 
     @DisplayName("강의 신청자를 저장한다.")
     @Test
@@ -30,7 +34,7 @@ class SubscriberServiceTest extends TestSupport {
         LocalDateTime endDate = LocalDateTime.parse("2023-05-05T00:00:00");
 
         Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
-        Session session = Session.createPaid(1L, "테스트강의", List.of(image), PickSession.NON_PICK,1, 800000, startDate, endDate);
+        Session session = Session.createPaid(1L, "테스트강의", List.of(image), 1, 800000, startDate, endDate);
 
         sessionService.save(session);
 
@@ -51,7 +55,7 @@ class SubscriberServiceTest extends TestSupport {
         LocalDateTime endDate = LocalDateTime.parse("2023-05-05T00:00:00");
 
         Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
-        Session session = Session.createPaid(1L, "테스트강의", List.of(image), PickSession.PICK,1, 800000, startDate, endDate);
+        Session session = Session.createPaid(1L, "테스트강의", List.of(image), 1, 800000, startDate, endDate);
 
         sessionService.save(session);
 
@@ -60,5 +64,24 @@ class SubscriberServiceTest extends TestSupport {
         assertThatThrownBy(() -> subscriberService.subscribe(1L, 1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 인원은 강의승인을 받지 않았습니다.");
+    }
+
+    @DisplayName("강의를 취소할 시 선발된 인원이라면 예외가 발생한다.")
+    @Test
+    void cancelSubscribePickUserThrowExceptionTest() {
+        LocalDateTime startDate = LocalDateTime.parse("2023-04-05T00:00:00");
+        LocalDateTime endDate = LocalDateTime.parse("2023-05-05T00:00:00");
+
+        Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
+        Session session = Session.createPaid(1L, "테스트강의", List.of(image), 1, 800000, startDate, endDate);
+
+        sessionService.save(session);
+        sessionService.changeRecruitmentStatus(1L, RecruitmentStatus.RECRUIT);
+        subscriberService.subscribe(1L, 1L);
+        sessionPickService.enrollPickUser(1L, 1L);
+
+        assertThatThrownBy(() -> subscriberService.cancelSubscribe(1L, 1L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("선발된 인원이므로 강의 취소가 불가합니다.");
     }
 }

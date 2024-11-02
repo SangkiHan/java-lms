@@ -1,7 +1,6 @@
 package nextstep.course.domain;
 
 import nextstep.courses.domain.Course;
-import nextstep.session.domain.PickSession;
 import nextstep.session.domain.Session;
 import nextstep.session.domain.image.Image;
 import org.junit.jupiter.api.DisplayName;
@@ -55,6 +54,6 @@ public class CourseTest {
         LocalDateTime endDate = LocalDateTime.parse("2023-05-05T00:00:00");
 
         Image image = new Image((long) id, "테스트이미지.jpg", 300, 200, 1);
-        return Session.createFree((long) id, "테스트강의", List.of(image), PickSession.NON_PICK, startDate, endDate);
+        return Session.createFree((long) id, "테스트강의", List.of(image), startDate, endDate);
     }
 }

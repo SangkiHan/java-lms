@@ -23,7 +23,7 @@ public class SessionTest {
         Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
 
         //when
-        Session session = Session.createFree(1L, "테스트강의", List.of(image), PickSession.NON_PICK, startDate, endDate);
+        Session session = Session.createFree(1L, "테스트강의", List.of(image), startDate, endDate);
 
         //then
         assertThat(session)
@@ -40,7 +40,7 @@ public class SessionTest {
         Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
 
         //when
-        Session session = Session.createPaid(1L, "테스트강의", List.of(image), PickSession.NON_PICK, 100, 800000, startDate, endDate);
+        Session session = Session.createPaid(1L, "테스트강의", List.of(image), 100, 800000, startDate, endDate);
 
         //then
         assertThat(session)
@@ -56,7 +56,7 @@ public class SessionTest {
         LocalDateTime endDate = LocalDateTime.parse("2023-05-05T00:00:00");
 
         Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
-        Session session = Session.createFree(1L, "테스트강의", List.of(image), PickSession.NON_PICK, startDate, endDate);
+        Session session = Session.createFree(1L, "테스트강의", List.of(image), startDate, endDate);
 
         //when
         session.processSession();
@@ -74,7 +74,7 @@ public class SessionTest {
 
         Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
 
-        Session session = Session.createFree(1L, "테스트강의", List.of(image), PickSession.NON_PICK, startDate, endDate);
+        Session session = Session.createFree(1L, "테스트강의", List.of(image), startDate, endDate);
 
         //when
         session.closedSession();
@@ -92,7 +92,7 @@ public class SessionTest {
 
         Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
 
-        Session session = Session.createFree(1L, "테스트강의", List.of(image), PickSession.NON_PICK, startDate, endDate);
+        Session session = Session.createFree(1L, "테스트강의", List.of(image), startDate, endDate);
         session.processSession();
         session.recruitSession();
 
@@ -113,7 +113,7 @@ public class SessionTest {
         LocalDateTime endDate = LocalDateTime.parse("2023-05-05T00:00:00");
 
         Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
-        Session session = Session.createPaid(1L, "테스트강의", List.of(image), PickSession.NON_PICK, 100, 800000, startDate, endDate);
+        Session session = Session.createPaid(1L, "테스트강의", List.of(image), 100, 800000, startDate, endDate);
         session.closedSession();
         Payment payment = new Payment(1L, 1L, 1L, 800000);
         NsUser user = new NsUser(1L, "javajigi", "password", "name", "javajigi@slipp.net");
@@ -132,7 +132,7 @@ public class SessionTest {
         LocalDateTime endDate = LocalDateTime.parse("2023-05-05T00:00:00");
 
         Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
-        Session session = Session.createPaid(1L, "테스트강의", List.of(image), PickSession.NON_PICK, 100, 800000, startDate, endDate);
+        Session session = Session.createPaid(1L, "테스트강의", List.of(image), 100, 800000, startDate, endDate);
         NsUser user = new NsUser(1L, "javajigi", "password", "name", "javajigi@slipp.net");
         Payment payment = new Payment(1L, 1L, 1L, 700000);
         session.processSession();
@@ -152,7 +152,7 @@ public class SessionTest {
         LocalDateTime endDate = LocalDateTime.parse("2023-05-05T00:00:00");
 
         Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
-        Session session = Session.createPaid(1L, "테스트강의", List.of(image), PickSession.NON_PICK, 100, 800000, startDate, endDate);
+        Session session = Session.createPaid(1L, "테스트강의", List.of(image), 100, 800000, startDate, endDate);
         session.processSession();
         session.recruitSession();
         NsUser user = new NsUser(1L, "javajigi", "password", "name", "javajigi@slipp.net");
@@ -171,7 +171,7 @@ public class SessionTest {
         LocalDateTime endDate = LocalDateTime.parse("2023-05-05T00:00:00");
 
         Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
-        Session session = Session.createPaid(1L, "테스트강의", List.of(image), PickSession.NON_PICK, 1, 800000, startDate, endDate);
+        Session session = Session.createPaid(1L, "테스트강의", List.of(image), 1, 800000, startDate, endDate);
 
         NsUser user1 = new NsUser(1L, "javajigi", "password", "name", "javajigi@slipp.net");
         NsUser user2 = new NsUser(2L, "sanjigi", "password", "name", "sanjigi@slipp.net");
@@ -196,7 +196,7 @@ public class SessionTest {
         LocalDateTime endDate = LocalDateTime.parse("2023-05-05T00:00:00");
 
         Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
-        Session session = Session.createFree(1L, "테스트강의", List.of(image), PickSession.PICK, startDate, endDate);
+        Session session = Session.createFree(1L, "테스트강의", List.of(image), startDate, endDate);
 
         NsUser user1 = new NsUser(1L, "javajigi", "password", "name", "javajigi@slipp.net");
         NsUser user2 = new NsUser(2L, "sanjigi", "password", "name", "sanjigi@slipp.net");
@@ -212,13 +212,13 @@ public class SessionTest {
 
     @DisplayName("강의를 신청할 시 비모집중인 강의이면 예외가 발생한다")
     @Test
-    void subscribeSessionNotRecuitThrowExceptionTest() {
+    void subscribeSessionNotRecruitThrowExceptionTest() {
         //given
         LocalDateTime startDate = LocalDateTime.parse("2023-04-05T00:00:00");
         LocalDateTime endDate = LocalDateTime.parse("2023-05-05T00:00:00");
 
         Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
-        Session session = Session.createPaid(1L, "테스트강의", List.of(image), PickSession.NON_PICK, 100, 800000, startDate, endDate);
+        Session session = Session.createPaid(1L, "테스트강의", List.of(image), 100, 800000, startDate, endDate);
         session.nonRecruitSession();
         Payment payment = new Payment(1L, 1L, 1L, 800000);
         NsUser user = new NsUser(1L, "javajigi", "password", "name", "javajigi@slipp.net");
@@ -227,6 +227,27 @@ public class SessionTest {
         assertThatThrownBy(() -> session.subscribe(user, payment))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("모집이 종료된 강의입니다.");
+    }
+
+    @DisplayName("강의를 취소할 시 선발된 인원이면 예외가 발생한다.")
+    @Test
+    void cancelSessionPickUserThrowExceptionTest() {
+        //given
+        LocalDateTime startDate = LocalDateTime.parse("2023-04-05T00:00:00");
+        LocalDateTime endDate = LocalDateTime.parse("2023-05-05T00:00:00");
+
+        Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
+        Session session = Session.createFree(1L, "테스트강의", List.of(image), startDate, endDate);
+
+        NsUser user1 = new NsUser(1L, "javajigi", "password", "name", "javajigi@slipp.net");
+
+        session.processSession();
+        session.enrollPick(user1);
+
+        //when, then
+        assertThatThrownBy(() -> session.cancelSubscribe(user1))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("선발된 인원이므로 강의 취소가 불가합니다.");
     }
 
 }
