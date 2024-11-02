@@ -20,7 +20,7 @@ public class JdbcSessionRepository implements SessionRepository {
     }
     @Override
     public int save(Session session) {
-        String sql = "insert into session (title, paymentType, pickSession, subscribeStatus, subscribeMax, price, start_date, end_date, created_at, updated_at) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "insert into session (title, payment_type, pick_session, subscribe_status, subscribe_max, price, start_date, end_date, created_at, updated_at) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         return jdbcTemplate.update(sql,
                 session.getTitle(),
                 session.getPaymentType().name(),
@@ -37,7 +37,7 @@ public class JdbcSessionRepository implements SessionRepository {
 
     @Override
     public Session findById(Long id) {
-        String sql = "select id, title, paymentType, pickSession, subscribeStatus, subscribeMax, price, start_date, end_date, created_at, updated_at from session where id = ?";
+        String sql = "select id, title, payment_type, pick_session, subscribe_status, subscribe_max, price, start_date, end_date, created_at, updated_at from session where id = ?";
         RowMapper<Session> rowMapper = (rs, rowNum) -> new Session(
                 rs.getLong(1),
                 rs.getString(2),
@@ -59,7 +59,7 @@ public class JdbcSessionRepository implements SessionRepository {
 
     @Override
     public int updateSubscribeStatus(Long sessionId, SubscribeStatus subscribeStatus) {
-        String sql = "update  session set subscribeStatus = ?, updated_at = ? where id = ?";
+        String sql = "update session set subscribe_status = ?, updated_at = ? where id = ?";
         return jdbcTemplate.update(sql,
                 subscribeStatus.name(),
                 LocalDateTime.now(),
@@ -68,7 +68,7 @@ public class JdbcSessionRepository implements SessionRepository {
     }
 
     private List<Image> findImageBySessionId(Long sessionId) {
-        String sql = "select id, session_id, name, width, height, capacity, created_at, updated_at from image where session_id = ?";
+        String sql = "select id, session_id, name, width, height, capacity, created_at, updated_at from session_image where session_id = ?";
         RowMapper<Image> rowMapper = (rs, rowNum) -> new Image(
                 rs.getLong(1),
                 rs.getLong(2),
