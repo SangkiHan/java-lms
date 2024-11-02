@@ -59,10 +59,10 @@ public class SessionTest {
         Session session = Session.createFree(1L, "테스트강의", List.of(image), PickSession.NON_PICK, startDate, endDate);
 
         //when
-        session.waitSession();
+        session.processSession();
 
         //then
-        assertThat(session.getSessionStatus()).isEqualTo(SessionStatus.WAIT);
+        assertThat(session.getSessionStatus()).isEqualTo(SessionStatus.PROCESS);
     }
 
     @DisplayName("강의를 종료한다.")
@@ -93,7 +93,7 @@ public class SessionTest {
         Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
 
         Session session = Session.createFree(1L, "테스트강의", List.of(image), PickSession.NON_PICK, startDate, endDate);
-        session.waitSession();
+        session.processSession();
 
         NsUser user = new NsUser(1L, "javajigi", "password", "name", "javajigi@slipp.net");
 
@@ -104,7 +104,7 @@ public class SessionTest {
         assertThat(session.getSubscribeCount()).isEqualTo(1);
     }
 
-    @DisplayName("강의를 신청할 시 모집중이 아니면 예외가 발생한다")
+    @DisplayName("강의를 신청할 시 종료된 강의하면 예외가 발생한다")
     @Test
     void subscribeSessionNotWaitThrowExceptionTest() {
         //given
@@ -113,13 +113,14 @@ public class SessionTest {
 
         Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
         Session session = Session.createPaid(1L, "테스트강의", List.of(image), PickSession.NON_PICK, 100, 800000, startDate, endDate);
-        Payment payment = new Payment(1L, 1L, 1L, 700000);
+        session.closedSession();
+        Payment payment = new Payment(1L, 1L, 1L, 800000);
         NsUser user = new NsUser(1L, "javajigi", "password", "name", "javajigi@slipp.net");
 
         //when, then
         assertThatThrownBy(() -> session.subscribe(user, payment))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("현재 강의가 모집중이 아닙니다.");
+                .hasMessage("종료된 강의입니다.");
     }
 
     @DisplayName("유료 강의를 신청할 시 수강생이 결제한 금액과 수강료가 일치하지 않으면 예외가 발생한다.")
@@ -133,7 +134,7 @@ public class SessionTest {
         Session session = Session.createPaid(1L, "테스트강의", List.of(image), PickSession.NON_PICK, 100, 800000, startDate, endDate);
         NsUser user = new NsUser(1L, "javajigi", "password", "name", "javajigi@slipp.net");
         Payment payment = new Payment(1L, 1L, 1L, 700000);
-        session.waitSession();
+        session.processSession();
 
         //when, then
         assertThatThrownBy(() -> session.subscribe(user, payment))
@@ -150,7 +151,7 @@ public class SessionTest {
 
         Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
         Session session = Session.createPaid(1L, "테스트강의", List.of(image), PickSession.NON_PICK, 100, 800000, startDate, endDate);
-        session.waitSession();
+        session.processSession();
         NsUser user = new NsUser(1L, "javajigi", "password", "name", "javajigi@slipp.net");
 
         //when, then
@@ -173,7 +174,7 @@ public class SessionTest {
         NsUser user2 = new NsUser(2L, "sanjigi", "password", "name", "sanjigi@slipp.net");
         Payment payment = new Payment(1L, 1L, 1L, 800000);
 
-        session.waitSession();
+        session.processSession();
         session.subscribe(user1, payment);
 
         //when, then
@@ -195,7 +196,7 @@ public class SessionTest {
         NsUser user1 = new NsUser(1L, "javajigi", "password", "name", "javajigi@slipp.net");
         NsUser user2 = new NsUser(2L, "sanjigi", "password", "name", "sanjigi@slipp.net");
 
-        session.waitSession();
+        session.processSession();
         session.enrollPick(user1);
 
         //when, then

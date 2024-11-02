@@ -34,7 +34,7 @@ class SubscriberServiceTest extends TestSupport {
 
         sessionService.save(session);
 
-        sessionService.changeSubscribeStatus(1L, SessionStatus.WAIT);
+        sessionService.changeSubscribeStatus(1L, SessionStatus.PROCESS);
         subscriberService.subscribe(1L, 1L);
 
         Session findSession = sessionService.findById(1L);
@@ -54,7 +54,7 @@ class SubscriberServiceTest extends TestSupport {
 
         sessionService.save(session);
 
-        sessionService.changeSubscribeStatus(1L, SessionStatus.WAIT);
+        sessionService.changeSubscribeStatus(1L, SessionStatus.PROCESS);
 
         assertThatThrownBy(() -> subscriberService.subscribe(1L, 1L))
                 .isInstanceOf(IllegalArgumentException.class)

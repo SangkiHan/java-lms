@@ -50,13 +50,13 @@ class SessionServiceTest extends TestSupport {
     @DisplayName("강의의 상태를 변경한다.")
     @Test
     void changeSubscribeStatusTest() {
-        sessionService.changeSubscribeStatus(1L, SessionStatus.WAIT);
+        sessionService.changeSubscribeStatus(1L, SessionStatus.PROCESS);
 
         Session session = sessionService.findById(1L);
 
         assertThat(session)
                 .extracting("id", "title", "paymentType", "sessionStatus", "subscribeMax", "price", "dateRange.startDate", "dateRange.endDate")
-                .contains(1L, "테스트강의", PaymentType.PAID, SessionStatus.WAIT, 1, 800000, startDate, endDate);
+                .contains(1L, "테스트강의", PaymentType.PAID, SessionStatus.PROCESS, 1, 800000, startDate, endDate);
 
         assertThat(session.getImage())
                 .extracting("sessionId", "name", "size.width.width", "size.height.height", "capacity.capacity")

@@ -33,7 +33,7 @@ class SessionPickServiceTest extends TestSupport {
 
         sessionService.save(session);
 
-        sessionService.changeSubscribeStatus(1L, SessionStatus.WAIT);
+        sessionService.changeSubscribeStatus(1L, SessionStatus.PROCESS);
         sessionPickService.enrollPickUser(1L, 1L);
 
         Session findSession = sessionService.findById(1L);

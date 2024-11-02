@@ -12,7 +12,7 @@ public class Session {
 
     private static final String PAID_SUBSCRIBE_MESSAGE = "유료강의는 결제내역이 필수입니다.";
     private static final String FREE_SUBSCRIBE_MESSAGE = "무료강의는 결제내역이 필요없습니다.";
-    private static final String SUBSCRIBE_STATUS_NOT_WAIT_MESSAGE = "현재 강의가 모집중이 아닙니다.";
+    private static final String SESSION_STATUS_NOT_CLOSED_MESSAGE = "종료된 강의입니다.";
     private static final String SUBSCRIBE_COUNT_MAX_MESSAGE = "강의가 이미 만석입니다.";
 
     private Long id;
@@ -122,8 +122,8 @@ public class Session {
         return this.sessionPicks.addUser(this, user);
     }
 
-    public void waitSession() {
-        changeSessionStatus(SessionStatus.WAIT);
+    public void processSession() {
+        changeSessionStatus(SessionStatus.PROCESS);
     }
 
     public void closedSession() {
@@ -196,8 +196,8 @@ public class Session {
 
 
     private void confirmSessionStatus() {
-        if (this.sessionStatus != sessionStatus.WAIT) {
-            throw new IllegalArgumentException(SUBSCRIBE_STATUS_NOT_WAIT_MESSAGE);
+        if (this.sessionStatus == sessionStatus.CLOSED) {
+            throw new IllegalArgumentException(SESSION_STATUS_NOT_CLOSED_MESSAGE);
         }
     }
 
