@@ -43,6 +43,12 @@ public class JdbcSubscriberRepository implements SubscriberRepository {
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 
+    @Override
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM subscriber WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
     private NsUser findUserById(Long userId) {
         String sql = "select id, user_id, password, name, email, created_at, updated_at from ns_user where id = ?";
         RowMapper<NsUser> rowMapper = (rs, rowNum) -> new NsUser(

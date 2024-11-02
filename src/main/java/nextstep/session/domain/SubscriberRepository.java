@@ -6,4 +6,6 @@ public interface SubscriberRepository {
 
     Subscriber findById(Long id);
 
+    void deleteById(Long id);
+
 }

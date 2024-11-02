@@ -21,11 +21,10 @@ public class JdbcSessionRepository implements SessionRepository {
     }
     @Override
     public int save(Session session) {
-        String sql = "insert into session (title, payment_type, pick_session, session_status, recruitment_status, subscribe_max, price, start_date, end_date, created_at, updated_at) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "insert into session (title, payment_type, session_status, recruitment_status, subscribe_max, price, start_date, end_date, created_at, updated_at) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         return jdbcTemplate.update(sql,
                 session.getTitle(),
                 session.getPaymentType().name(),
-                session.getPickSession().name(),
                 session.getSessionStatus().name(),
                 session.getRecruitmentStatus().name(),
                 session.getSubscribeMax(),
@@ -39,23 +38,22 @@ public class JdbcSessionRepository implements SessionRepository {
 
     @Override
     public Session findById(Long id) {
-        String sql = "select id, title, payment_type, pick_session, session_status, recruitment_status, subscribe_max, price, start_date, end_date, created_at, updated_at from session where id = ?";
+        String sql = "select id, title, payment_type, session_status, recruitment_status, subscribe_max, price, start_date, end_date, created_at, updated_at from session where id = ?";
         RowMapper<Session> rowMapper = (rs, rowNum) -> new Session(
                 rs.getLong(1),
                 rs.getString(2),
                 rs.getString(3),
                 rs.getString(4),
                 rs.getString(5),
-                rs.getString(6),
+                rs.getInt(6),
                 rs.getInt(7),
-                rs.getInt(8),
+                toLocalDateTime(rs.getTimestamp(8)),
                 toLocalDateTime(rs.getTimestamp(9)),
-                toLocalDateTime(rs.getTimestamp(10)),
                 findImageBySessionId(rs.getLong(1)),
                 findSessionPickBySessionId(rs.getLong(1)),
                 findSubscriberBySessionId(rs.getLong(1)),
-                toLocalDateTime(rs.getTimestamp(11)),
-                toLocalDateTime(rs.getTimestamp(12)));
+                toLocalDateTime(rs.getTimestamp(10)),
+                toLocalDateTime(rs.getTimestamp(11)));
 
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }

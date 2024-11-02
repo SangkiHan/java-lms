@@ -43,4 +43,16 @@ public class SubscriberService {
         subscriberRepository.save(subscriber);
     }
 
+    public Subscriber findById(Long subscribeId) {
+        return subscriberRepository.findById(subscribeId);
+    }
+
+    public void cancelSubscribe(Long sessionId, Long userId) {
+        Session session = sessionService.findById(sessionId);
+        NsUser user = userRepository.findById(userId);
+        Long subscribeId = session.cancelSubscribe(user);
+
+        subscriberRepository.deleteById(subscribeId);
+    }
+
 }

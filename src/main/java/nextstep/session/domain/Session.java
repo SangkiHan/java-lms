@@ -11,6 +11,7 @@ import java.util.List;
 
 public class Session {
 
+    private static final String EXIST_PICK_MESSAGE = "선발된 인원이므로 강의 취소가 불가합니다.";
     private static final String PAID_SUBSCRIBE_MESSAGE = "유료강의는 결제내역이 필수입니다.";
     private static final String FREE_SUBSCRIBE_MESSAGE = "무료강의는 결제내역이 필요없습니다.";
     private static final String SESSION_STATUS_NOT_CLOSED_MESSAGE = "종료된 강의입니다.";
@@ -25,7 +26,6 @@ public class Session {
     private RecruitmentStatus recruitmentStatus;
     private int subscribeMax;
     private int price;
-    private PickSession pickSession;
     private Subscribers subscribers = new Subscribers();
     private SessionPicks sessionPicks = new SessionPicks();
     private final DateRange dateRange;
@@ -42,11 +42,10 @@ public class Session {
         this.dateDomain = new DateDomain();
     }
 
-    private Session(Long id, String title, List<Image> image, PickSession pickSession, PaymentType paymentType, int subscribeMax, int price, LocalDateTime startDate, LocalDateTime endDate) {
+    private Session(Long id, String title, List<Image> image, PaymentType paymentType, int subscribeMax, int price, LocalDateTime startDate, LocalDateTime endDate) {
         this.id = id;
         this.title = title;
         this.image = image;
-        this.pickSession = pickSession;
         this.paymentType = paymentType;
         this.sessionStatus = SessionStatus.READY;
         this.recruitmentStatus = RecruitmentStatus.NON_RECRUIT;
@@ -56,11 +55,10 @@ public class Session {
         this.dateDomain = new DateDomain();
     }
 
-    private Session(Long id, String title, List<Image> image, PickSession pickSession, PaymentType paymentType, LocalDateTime startDate, LocalDateTime endDate) {
+    private Session(Long id, String title, List<Image> image, PaymentType paymentType, LocalDateTime startDate, LocalDateTime endDate) {
         this.id = id;
         this.title = title;
         this.image = image;
-        this.pickSession = pickSession;
         this.paymentType = paymentType;
         this.sessionStatus = SessionStatus.READY;
         this.recruitmentStatus = RecruitmentStatus.NON_RECRUIT;
@@ -68,11 +66,10 @@ public class Session {
         this.dateDomain = new DateDomain();
     }
 
-    public Session(Long id, String title, String paymentType, String pickSession, String sessionStatus, String recruitmentStatus, int subscribeMax, int price, LocalDateTime startDate, LocalDateTime endDate, List<Image> image, List<SessionPick> sessionPicks, List<Subscriber> subscribers, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Session(Long id, String title, String paymentType, String sessionStatus, String recruitmentStatus, int subscribeMax, int price, LocalDateTime startDate, LocalDateTime endDate, List<Image> image, List<SessionPick> sessionPicks, List<Subscriber> subscribers, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.title = title;
         this.paymentType = PaymentType.valueOf(paymentType);
-        this.pickSession = PickSession.valueOf(pickSession);
         this.recruitmentStatus = RecruitmentStatus.valueOf(recruitmentStatus);
         this.price = price;
         this.subscribeMax = subscribeMax;
@@ -96,16 +93,16 @@ public class Session {
         this.dateDomain = new DateDomain(createdAt, updatedAt);
     }
 
-    public static Session createFree(Long id, String title, List<Image> image, PickSession pickSession, LocalDateTime startDate, LocalDateTime endDate) {
-        return new Session(id, title, image, pickSession, PaymentType.FREE, startDate, endDate);
+    public static Session createFree(Long id, String title, List<Image> image, LocalDateTime startDate, LocalDateTime endDate) {
+        return new Session(id, title, image, PaymentType.FREE, startDate, endDate);
     }
 
-    public static Session createPaid(Long id, String title, List<Image> image, PickSession pickSession, int subscribeMax, int price, LocalDateTime startDate, LocalDateTime endDate) {
-        return new Session(id, title, image, pickSession, PaymentType.PAID, subscribeMax, price, startDate, endDate);
+    public static Session createPaid(Long id, String title, List<Image> image, int subscribeMax, int price, LocalDateTime startDate, LocalDateTime endDate) {
+        return new Session(id, title, image, PaymentType.PAID, subscribeMax, price, startDate, endDate);
     }
 
     public Subscriber subscribe(NsUser user) {
-        confirmAllSessionStatus(user);
+        confirmAllSessionStatus();
         if (paymentType == PaymentType.PAID) {
             throw new IllegalArgumentException(PAID_SUBSCRIBE_MESSAGE);
         }
@@ -113,7 +110,7 @@ public class Session {
     }
 
     public Subscriber subscribe(NsUser user, Payment payment) {
-        confirmAllSessionStatus(user);
+        confirmAllSessionStatus();
         if (paymentType == PaymentType.FREE) {
             throw new IllegalArgumentException(FREE_SUBSCRIBE_MESSAGE);
         }
@@ -140,6 +137,11 @@ public class Session {
 
     public void nonRecruitSession() {
         this.recruitmentStatus = RecruitmentStatus.NON_RECRUIT;
+    }
+
+    public Long cancelSubscribe(NsUser user) {
+        confirmSessionPick(user);
+        return getSubscriberId(user);
     }
 
     public int getSubscribeCount() {
@@ -194,10 +196,6 @@ public class Session {
         return sessionPicks;
     }
 
-    public PickSession getPickSession() {
-        return pickSession;
-    }
-
     public RecruitmentStatus getRecruitmentStatus() {
         return recruitmentStatus;
     }
@@ -210,8 +208,7 @@ public class Session {
         return this.subscribers.addUser(this, nsUser);
     }
 
-    private void confirmAllSessionStatus(NsUser nsUser) {
-        confirmSessionPick(nsUser);
+    private void confirmAllSessionStatus() {
         confirmSessionStatus();
         confirmRecruitmentStatus();
     }
@@ -234,10 +231,14 @@ public class Session {
         }
     }
 
-    private void confirmSessionPick(NsUser nsUser) {
-        if (this.pickSession.checkPickSession()) {
-            this.sessionPicks.confirmPickUser(nsUser);
+    private void confirmSessionPick(NsUser user) {
+        if(this.sessionPicks.checkPickUser(user)) {
+            throw new IllegalArgumentException(EXIST_PICK_MESSAGE);
         }
+    }
+
+    private Long getSubscriberId(NsUser user) {
+        return this.subscribers.getSubscribeId(user);
     }
 
 }

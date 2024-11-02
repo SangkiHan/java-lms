@@ -46,4 +46,8 @@ public class Subscriber {
     public Long getSessionId() {
         return sessionId;
     }
+
+    public boolean checkNsUser(NsUser nsUser) {
+        return this.nsUser.equals(nsUser);
+    }
 }

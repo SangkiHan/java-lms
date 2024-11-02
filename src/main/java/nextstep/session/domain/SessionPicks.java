@@ -7,8 +7,6 @@ import java.util.List;
 
 public class SessionPicks {
 
-    private static final String NOT_EXIST_PICK_MESSAGE = "해당 인원은 강의승인을 받지 않았습니다.";
-
     private List<SessionPick> sessionPicks = new ArrayList<>();
 
     public SessionPicks() {
@@ -24,13 +22,9 @@ public class SessionPicks {
         return sessionPick;
     }
 
-    public void confirmPickUser(NsUser nsUser) {
-        boolean hasValidPick = this.sessionPicks.stream()
+    public boolean checkPickUser(NsUser nsUser) {
+        return this.sessionPicks.stream()
                 .anyMatch(pick -> pick.checkSessionPick(nsUser));
-
-        if (!hasValidPick) {
-            throw new IllegalArgumentException(NOT_EXIST_PICK_MESSAGE); // 예외 발생
-        }
     }
 
     public List<SessionPick> getSessionPicks() {
