@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Repository("subscriberRepository")
 public class JdbcSubscriberRepository implements SubscriberRepository {
 
-    private JdbcOperations jdbcTemplate;
+    private final JdbcOperations jdbcTemplate;
 
     public JdbcSubscriberRepository(JdbcOperations jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;

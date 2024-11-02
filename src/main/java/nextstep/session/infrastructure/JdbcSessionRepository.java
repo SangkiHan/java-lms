@@ -14,7 +14,7 @@ import java.util.List;
 
 @Repository("sessionRepository")
 public class JdbcSessionRepository implements SessionRepository {
-    private JdbcOperations jdbcTemplate;
+    private final JdbcOperations jdbcTemplate;
 
     public JdbcSessionRepository(JdbcOperations jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -107,13 +107,14 @@ public class JdbcSessionRepository implements SessionRepository {
     }
 
     private List<SessionPick> findSessionPickBySessionId(Long sessionId) {
-        String sql = "select id, session_id, ns_user_id, created_at, updated_at from session_pick where session_id = ?";
+        String sql = "select id, session_id, ns_user_id, approve_status, created_at, updated_at from session_pick where session_id = ?";
         RowMapper<SessionPick> rowMapper = (rs, rowNum) -> new SessionPick(
                 rs.getLong(1),
                 rs.getLong(2),
                 findUserById(rs.getLong(3)),
-                toLocalDateTime(rs.getTimestamp(4)),
-                toLocalDateTime(rs.getTimestamp(5)));
+                rs.getString(4),
+                toLocalDateTime(rs.getTimestamp(5)),
+                toLocalDateTime(rs.getTimestamp(6)));
 
         return jdbcTemplate.query(sql, rowMapper, sessionId);
     }

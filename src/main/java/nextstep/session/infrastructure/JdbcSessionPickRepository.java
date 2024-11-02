@@ -1,5 +1,6 @@
 package nextstep.session.infrastructure;
 
+import nextstep.session.domain.ApproveStatus;
 import nextstep.session.domain.SessionPick;
 import nextstep.session.domain.SessionPickRepository;
 import nextstep.users.domain.NsUser;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @Repository("sessionPickRepository")
 public class JdbcSessionPickRepository implements SessionPickRepository {
 
-    private JdbcOperations jdbcTemplate;
+    private final JdbcOperations jdbcTemplate;
 
     public JdbcSessionPickRepository(JdbcOperations jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -21,10 +22,11 @@ public class JdbcSessionPickRepository implements SessionPickRepository {
 
     @Override
     public int save(SessionPick sessionPick) {
-        String sql = "insert into session_pick (session_id, ns_user_id, created_at, updated_at) values(?, ?, ?, ?)";
+        String sql = "insert into session_pick (session_id, ns_user_id, approve_status, created_at, updated_at) values(?, ?, ?, ?, ?)";
         return jdbcTemplate.update(sql,
                 sessionPick.getSessionId(),
                 sessionPick.getNsUser().getId(),
+                sessionPick.getApproveStatus().name(),
                 sessionPick.getDateDomain().getCreatedAt(),
                 sessionPick.getDateDomain().getUpdatedAt()
         );
@@ -32,15 +34,26 @@ public class JdbcSessionPickRepository implements SessionPickRepository {
 
     @Override
     public SessionPick findById(Long id) {
-        String sql = "select id, session_id, ns_user_id, created_at, updated_at from session_pick where id = ?";
+        String sql = "select id, session_id, ns_user_id, approve_status, created_at, updated_at from session_pick where id = ?";
         RowMapper<SessionPick> rowMapper = (rs, rowNum) -> new SessionPick(
                 rs.getLong(1),
                 rs.getLong(2),
                 findUserById(rs.getLong(3)),
-                toLocalDateTime(rs.getTimestamp(4)),
-                toLocalDateTime(rs.getTimestamp(5)));
+                rs.getString(4),
+                toLocalDateTime(rs.getTimestamp(5)),
+                toLocalDateTime(rs.getTimestamp(6)));
 
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
+    }
+
+    @Override
+    public int updateApproveStatus(Long sessionPickId, ApproveStatus approveStatus) {
+        String sql = "update session_pick set approve_status = ?, updated_at = ? where id = ?";
+        return jdbcTemplate.update(sql,
+                approveStatus.name(),
+                LocalDateTime.now(),
+                sessionPickId
+        );
     }
 
     private NsUser findUserById(Long userId) {

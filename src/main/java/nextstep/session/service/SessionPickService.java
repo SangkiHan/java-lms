@@ -1,7 +1,9 @@
 package nextstep.session.service;
 
-import nextstep.payments.domain.Payment;
-import nextstep.session.domain.*;
+import nextstep.session.domain.ApproveStatus;
+import nextstep.session.domain.Session;
+import nextstep.session.domain.SessionPick;
+import nextstep.session.domain.SessionPickRepository;
 import nextstep.users.domain.NsUser;
 import nextstep.users.domain.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,5 +31,13 @@ public class SessionPickService {
 
         SessionPick sessionPick = session.enrollPick(nsUser);
         sessionPickRepository.save(sessionPick);
+    }
+
+    public void approvePickUser(Long sessionPickId, ApproveStatus approveStatus) {
+        sessionPickRepository.updateApproveStatus(sessionPickId, approveStatus);
+    }
+
+    public SessionPick findById(Long sessionPickId) {
+        return sessionPickRepository.findById(sessionPickId);
     }
 }
