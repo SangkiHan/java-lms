@@ -1,5 +1,6 @@
 package nextstep.session.service;
 
+import nextstep.session.RecruitmentStatus;
 import nextstep.session.domain.ImageRepository;
 import nextstep.session.domain.Session;
 import nextstep.session.domain.SessionRepository;
@@ -32,6 +33,10 @@ public class SessionService {
 
     public void changeSubscribeStatus(Long sessionId, SessionStatus sessionStatus) {
         sessionRepository.updateSessionStatus(sessionId, sessionStatus);
+    }
+
+    public void changeRecruitmentStatus(Long sessionId, RecruitmentStatus recruitmentStatus) {
+        sessionRepository.updateRecruitmentStatus(sessionId, recruitmentStatus);
     }
 
 }

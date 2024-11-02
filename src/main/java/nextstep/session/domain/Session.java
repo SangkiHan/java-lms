@@ -2,6 +2,7 @@ package nextstep.session.domain;
 
 import nextstep.DateDomain;
 import nextstep.payments.domain.Payment;
+import nextstep.session.RecruitmentStatus;
 import nextstep.session.domain.image.Image;
 import nextstep.users.domain.NsUser;
 
@@ -13,6 +14,7 @@ public class Session {
     private static final String PAID_SUBSCRIBE_MESSAGE = "유료강의는 결제내역이 필수입니다.";
     private static final String FREE_SUBSCRIBE_MESSAGE = "무료강의는 결제내역이 필요없습니다.";
     private static final String SESSION_STATUS_NOT_CLOSED_MESSAGE = "종료된 강의입니다.";
+    private static final String RECRUITMENT_STATUS_CLOSED_MESSAGE = "모집이 종료된 강의입니다.";
     private static final String SUBSCRIBE_COUNT_MAX_MESSAGE = "강의가 이미 만석입니다.";
 
     private Long id;
@@ -20,6 +22,7 @@ public class Session {
     private final List<Image> image;
     private final PaymentType paymentType;
     private SessionStatus sessionStatus;
+    private RecruitmentStatus recruitmentStatus;
     private int subscribeMax;
     private int price;
     private PickSession pickSession;
@@ -46,6 +49,7 @@ public class Session {
         this.pickSession = pickSession;
         this.paymentType = paymentType;
         this.sessionStatus = SessionStatus.READY;
+        this.recruitmentStatus = RecruitmentStatus.NON_RECRUIT;
         this.subscribeMax = subscribeMax;
         this.price = price;
         this.dateRange = new DateRange(startDate, endDate);
@@ -59,15 +63,17 @@ public class Session {
         this.pickSession = pickSession;
         this.paymentType = paymentType;
         this.sessionStatus = SessionStatus.READY;
+        this.recruitmentStatus = RecruitmentStatus.NON_RECRUIT;
         this.dateRange = new DateRange(startDate, endDate);
         this.dateDomain = new DateDomain();
     }
 
-    public Session(Long id, String title, String paymentType, String pickSession, String sessionStatus, int subscribeMax, int price, LocalDateTime startDate, LocalDateTime endDate, List<Image> image, List<SessionPick> sessionPicks, List<Subscriber> subscribers, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Session(Long id, String title, String paymentType, String pickSession, String sessionStatus, String recruitmentStatus, int subscribeMax, int price, LocalDateTime startDate, LocalDateTime endDate, List<Image> image, List<SessionPick> sessionPicks, List<Subscriber> subscribers, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.title = title;
         this.paymentType = PaymentType.valueOf(paymentType);
         this.pickSession = PickSession.valueOf(pickSession);
+        this.recruitmentStatus = RecruitmentStatus.valueOf(recruitmentStatus);
         this.price = price;
         this.subscribeMax = subscribeMax;
         this.sessionStatus = SessionStatus.valueOf(sessionStatus);
@@ -99,8 +105,7 @@ public class Session {
     }
 
     public Subscriber subscribe(NsUser user) {
-        confirmSessionPick(user);
-        confirmSessionStatus();
+        confirmAllSessionStatus(user);
         if (paymentType == PaymentType.PAID) {
             throw new IllegalArgumentException(PAID_SUBSCRIBE_MESSAGE);
         }
@@ -108,8 +113,7 @@ public class Session {
     }
 
     public Subscriber subscribe(NsUser user, Payment payment) {
-        confirmSessionPick(user);
-        confirmSessionStatus();
+        confirmAllSessionStatus(user);
         if (paymentType == PaymentType.FREE) {
             throw new IllegalArgumentException(FREE_SUBSCRIBE_MESSAGE);
         }
@@ -128,6 +132,14 @@ public class Session {
 
     public void closedSession() {
         changeSessionStatus(SessionStatus.CLOSED);
+    }
+
+    public void recruitSession() {
+        this.recruitmentStatus = RecruitmentStatus.RECRUIT;
+    }
+
+    public void nonRecruitSession() {
+        this.recruitmentStatus = RecruitmentStatus.NON_RECRUIT;
     }
 
     public int getSubscribeCount() {
@@ -186,6 +198,10 @@ public class Session {
         return pickSession;
     }
 
+    public RecruitmentStatus getRecruitmentStatus() {
+        return recruitmentStatus;
+    }
+
     private void changeSessionStatus(SessionStatus sessionStatus) {
         this.sessionStatus = sessionStatus;
     }
@@ -194,6 +210,11 @@ public class Session {
         return this.subscribers.addUser(this, nsUser);
     }
 
+    private void confirmAllSessionStatus(NsUser nsUser) {
+        confirmSessionPick(nsUser);
+        confirmSessionStatus();
+        confirmRecruitmentStatus();
+    }
 
     private void confirmSessionStatus() {
         if (this.sessionStatus == sessionStatus.CLOSED) {
@@ -207,9 +228,16 @@ public class Session {
         }
     }
 
+    private void confirmRecruitmentStatus() {
+        if(this.recruitmentStatus == RecruitmentStatus.NON_RECRUIT) {
+            throw new IllegalArgumentException(RECRUITMENT_STATUS_CLOSED_MESSAGE);
+        }
+    }
+
     private void confirmSessionPick(NsUser nsUser) {
         if (this.pickSession.checkPickSession()) {
             this.sessionPicks.confirmPickUser(nsUser);
         }
     }
+
 }
