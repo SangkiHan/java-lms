@@ -20,12 +20,12 @@ public class JdbcSessionRepository implements SessionRepository {
     }
     @Override
     public int save(Session session) {
-        String sql = "insert into session (title, payment_type, pick_session, subscribe_status, subscribe_max, price, start_date, end_date, created_at, updated_at) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "insert into session (title, payment_type, pick_session, session_status, subscribe_max, price, start_date, end_date, created_at, updated_at) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         return jdbcTemplate.update(sql,
                 session.getTitle(),
                 session.getPaymentType().name(),
                 session.getPickSession().name(),
-                session.getSubscribeStatus().name(),
+                session.getSessionStatus().name(),
                 session.getSubscribeMax(),
                 session.getPrice(),
                 session.getDateRange().getStartDate(),
@@ -37,7 +37,7 @@ public class JdbcSessionRepository implements SessionRepository {
 
     @Override
     public Session findById(Long id) {
-        String sql = "select id, title, payment_type, pick_session, subscribe_status, subscribe_max, price, start_date, end_date, created_at, updated_at from session where id = ?";
+        String sql = "select id, title, payment_type, pick_session, session_status, subscribe_max, price, start_date, end_date, created_at, updated_at from session where id = ?";
         RowMapper<Session> rowMapper = (rs, rowNum) -> new Session(
                 rs.getLong(1),
                 rs.getString(2),
@@ -58,10 +58,10 @@ public class JdbcSessionRepository implements SessionRepository {
     }
 
     @Override
-    public int updateSubscribeStatus(Long sessionId, SubscribeStatus subscribeStatus) {
-        String sql = "update session set subscribe_status = ?, updated_at = ? where id = ?";
+    public int updateSessionStatus(Long sessionId, SessionStatus sessionStatus) {
+        String sql = "update session set session_status = ?, updated_at = ? where id = ?";
         return jdbcTemplate.update(sql,
-                subscribeStatus.name(),
+                sessionStatus.name(),
                 LocalDateTime.now(),
                 sessionId
         );

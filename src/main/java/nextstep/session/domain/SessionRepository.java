@@ -5,5 +5,5 @@ public interface SessionRepository {
 
     Session findById(Long id);
 
-    int updateSubscribeStatus(Long sessionId, SubscribeStatus subscribeStatus);
+    int updateSessionStatus(Long sessionId, SessionStatus sessionStatus);
 }

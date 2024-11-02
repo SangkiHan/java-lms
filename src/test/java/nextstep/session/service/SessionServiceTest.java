@@ -3,10 +3,9 @@ package nextstep.session.service;
 import nextstep.session.domain.PaymentType;
 import nextstep.session.domain.PickSession;
 import nextstep.session.domain.Session;
-import nextstep.session.domain.SubscribeStatus;
+import nextstep.session.domain.SessionStatus;
 import nextstep.session.domain.image.Image;
 import nextstep.support.TestSupport;
-import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,8 +39,8 @@ class SessionServiceTest extends TestSupport {
     void saveTest() {
         Session session = sessionService.findById(1L);
         assertThat(session)
-                .extracting("id", "title", "paymentType", "subscribeStatus", "subscribeMax", "price", "dateRange.startDate", "dateRange.endDate")
-                .contains(1L, "테스트강의", PaymentType.PAID, SubscribeStatus.READY, 1, 800000, startDate, endDate);
+                .extracting("id", "title", "paymentType", "sessionStatus", "subscribeMax", "price", "dateRange.startDate", "dateRange.endDate")
+                .contains(1L, "테스트강의", PaymentType.PAID, SessionStatus.READY, 1, 800000, startDate, endDate);
 
         assertThat(session.getImage())
                 .extracting("sessionId", "name", "size.width.width", "size.height.height", "capacity.capacity")
@@ -51,13 +50,13 @@ class SessionServiceTest extends TestSupport {
     @DisplayName("강의의 상태를 변경한다.")
     @Test
     void changeSubscribeStatusTest() {
-        sessionService.changeSubscribeStatus(1L, SubscribeStatus.WAIT);
+        sessionService.changeSubscribeStatus(1L, SessionStatus.WAIT);
 
         Session session = sessionService.findById(1L);
 
         assertThat(session)
-                .extracting("id", "title", "paymentType", "subscribeStatus", "subscribeMax", "price", "dateRange.startDate", "dateRange.endDate")
-                .contains(1L, "테스트강의", PaymentType.PAID, SubscribeStatus.WAIT, 1, 800000, startDate, endDate);
+                .extracting("id", "title", "paymentType", "sessionStatus", "subscribeMax", "price", "dateRange.startDate", "dateRange.endDate")
+                .contains(1L, "테스트강의", PaymentType.PAID, SessionStatus.WAIT, 1, 800000, startDate, endDate);
 
         assertThat(session.getImage())
                 .extracting("sessionId", "name", "size.width.width", "size.height.height", "capacity.capacity")

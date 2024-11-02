@@ -62,7 +62,7 @@ public class SessionTest {
         session.waitSession();
 
         //then
-        assertThat(session.getSubscribeStatus()).isEqualTo(SubscribeStatus.WAIT);
+        assertThat(session.getSessionStatus()).isEqualTo(SessionStatus.WAIT);
     }
 
     @DisplayName("강의를 종료한다.")
@@ -80,7 +80,7 @@ public class SessionTest {
         session.closedSession();
 
         //then
-        assertThat(session.getSubscribeStatus()).isEqualTo(SubscribeStatus.CLOSED);
+        assertThat(session.getSessionStatus()).isEqualTo(SessionStatus.CLOSED);
     }
 
     @DisplayName("무료 강의를 신청할 시 수강인원이 1 증가한다.")

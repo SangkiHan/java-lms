@@ -3,8 +3,7 @@ package nextstep.session.service;
 import nextstep.session.domain.ImageRepository;
 import nextstep.session.domain.Session;
 import nextstep.session.domain.SessionRepository;
-import nextstep.session.domain.SubscribeStatus;
-import nextstep.session.domain.image.Image;
+import nextstep.session.domain.SessionStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,8 +30,8 @@ public class SessionService {
         return sessionRepository.findById(sessionId);
     }
 
-    public void changeSubscribeStatus(Long sessionId, SubscribeStatus subscribeStatus) {
-        sessionRepository.updateSubscribeStatus(sessionId, subscribeStatus);
+    public void changeSubscribeStatus(Long sessionId, SessionStatus sessionStatus) {
+        sessionRepository.updateSessionStatus(sessionId, sessionStatus);
     }
 
 }

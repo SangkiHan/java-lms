@@ -2,7 +2,7 @@ package nextstep.session.service;
 
 import nextstep.session.domain.PickSession;
 import nextstep.session.domain.Session;
-import nextstep.session.domain.SubscribeStatus;
+import nextstep.session.domain.SessionStatus;
 import nextstep.session.domain.image.Image;
 import nextstep.support.TestSupport;
 import org.junit.jupiter.api.DisplayName;
@@ -33,7 +33,7 @@ class SessionPickServiceTest extends TestSupport {
 
         sessionService.save(session);
 
-        sessionService.changeSubscribeStatus(1L, SubscribeStatus.WAIT);
+        sessionService.changeSubscribeStatus(1L, SessionStatus.WAIT);
         sessionPickService.enrollPickUser(1L, 1L);
 
         Session findSession = sessionService.findById(1L);

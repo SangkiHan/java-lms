@@ -30,8 +30,8 @@ class JdbcSessionRepositoryTest extends TestSupport {
         sessionRepository.save(session);
 
         assertThat(sessionRepository.findById(session.getId()))
-                .extracting("id", "title", "paymentType", "subscribeStatus", "subscribeMax", "price", "dateRange.startDate", "dateRange.endDate")
-                .containsExactly(1L, "테스트강의", PaymentType.PAID, SubscribeStatus.READY, 1, 800000, startDate, endDate);
+                .extracting("id", "title", "paymentType", "sessionStatus", "subscribeMax", "price", "dateRange.startDate", "dateRange.endDate")
+                .containsExactly(1L, "테스트강의", PaymentType.PAID, SessionStatus.READY, 1, 800000, startDate, endDate);
 
         assertThat(session.getImage())
                 .extracting("sessionId", "name", "size.width.width", "size.height.height", "capacity.capacity")

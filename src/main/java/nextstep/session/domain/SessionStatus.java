@@ -1,5 +1,5 @@
 package nextstep.session.domain;
 
-public enum SubscribeStatus {
+public enum SessionStatus {
      READY, WAIT, CLOSED
 }

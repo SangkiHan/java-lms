@@ -19,7 +19,7 @@ public class Session {
     private final String title;
     private final List<Image> image;
     private final PaymentType paymentType;
-    private SubscribeStatus subscribeStatus;
+    private SessionStatus sessionStatus;
     private int subscribeMax;
     private int price;
     private PickSession pickSession;
@@ -32,7 +32,7 @@ public class Session {
         this.title = title;
         this.image = image;
         this.paymentType = paymentType;
-        this.subscribeStatus = SubscribeStatus.READY;
+        this.sessionStatus = SessionStatus.READY;
         this.subscribeMax = subscribeMax;
         this.price = price;
         this.dateRange = new DateRange(startDate, endDate);
@@ -45,7 +45,7 @@ public class Session {
         this.image = image;
         this.pickSession = pickSession;
         this.paymentType = paymentType;
-        this.subscribeStatus = SubscribeStatus.READY;
+        this.sessionStatus = SessionStatus.READY;
         this.subscribeMax = subscribeMax;
         this.price = price;
         this.dateRange = new DateRange(startDate, endDate);
@@ -58,19 +58,19 @@ public class Session {
         this.image = image;
         this.pickSession = pickSession;
         this.paymentType = paymentType;
-        this.subscribeStatus = SubscribeStatus.READY;
+        this.sessionStatus = SessionStatus.READY;
         this.dateRange = new DateRange(startDate, endDate);
         this.dateDomain = new DateDomain();
     }
 
-    public Session(Long id, String title, String paymentType, String pickSession, String subscribeStatus, int subscribeMax, int price, LocalDateTime startDate, LocalDateTime endDate, List<Image> image, List<SessionPick> sessionPicks, List<Subscriber> subscribers, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Session(Long id, String title, String paymentType, String pickSession, String sessionStatus, int subscribeMax, int price, LocalDateTime startDate, LocalDateTime endDate, List<Image> image, List<SessionPick> sessionPicks, List<Subscriber> subscribers, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.title = title;
         this.paymentType = PaymentType.valueOf(paymentType);
         this.pickSession = PickSession.valueOf(pickSession);
         this.price = price;
         this.subscribeMax = subscribeMax;
-        this.subscribeStatus = SubscribeStatus.valueOf(subscribeStatus);
+        this.sessionStatus = SessionStatus.valueOf(sessionStatus);
         this.dateRange = new DateRange(startDate, endDate);
         this.image = image;
         this.sessionPicks = new SessionPicks(sessionPicks);
@@ -78,13 +78,13 @@ public class Session {
         this.dateDomain = new DateDomain(createdAt, updatedAt);
     }
 
-    public Session(Long id, String title, String paymentType, String subscribeStatus, int subscribeMax, int price, LocalDateTime startDate, LocalDateTime endDate, List<Image> image, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Session(Long id, String title, String paymentType, String sessionStatus, int subscribeMax, int price, LocalDateTime startDate, LocalDateTime endDate, List<Image> image, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.title = title;
         this.paymentType = PaymentType.valueOf(paymentType);
         this.price = price;
         this.subscribeMax = subscribeMax;
-        this.subscribeStatus = SubscribeStatus.valueOf(subscribeStatus);
+        this.sessionStatus = SessionStatus.valueOf(sessionStatus);
         this.image = image;
         this.dateRange = new DateRange(startDate, endDate);
         this.dateDomain = new DateDomain(createdAt, updatedAt);
@@ -100,7 +100,7 @@ public class Session {
 
     public Subscriber subscribe(NsUser user) {
         confirmSessionPick(user);
-        confirmSubscribeStatus();
+        confirmSessionStatus();
         if (paymentType == PaymentType.PAID) {
             throw new IllegalArgumentException(PAID_SUBSCRIBE_MESSAGE);
         }
@@ -109,7 +109,7 @@ public class Session {
 
     public Subscriber subscribe(NsUser user, Payment payment) {
         confirmSessionPick(user);
-        confirmSubscribeStatus();
+        confirmSessionStatus();
         if (paymentType == PaymentType.FREE) {
             throw new IllegalArgumentException(FREE_SUBSCRIBE_MESSAGE);
         }
@@ -123,19 +123,19 @@ public class Session {
     }
 
     public void waitSession() {
-        changeSubscribeStatus(SubscribeStatus.WAIT);
+        changeSessionStatus(SessionStatus.WAIT);
     }
 
     public void closedSession() {
-        changeSubscribeStatus(SubscribeStatus.CLOSED);
+        changeSessionStatus(SessionStatus.CLOSED);
     }
 
     public int getSubscribeCount() {
         return this.subscribers.subscribeUsersSize();
     }
 
-    public SubscribeStatus getSubscribeStatus() {
-        return subscribeStatus;
+    public SessionStatus getSessionStatus() {
+        return sessionStatus;
     }
 
     public Long getId() {
@@ -186,8 +186,8 @@ public class Session {
         return pickSession;
     }
 
-    private void changeSubscribeStatus(SubscribeStatus subscribeStatus) {
-        this.subscribeStatus = subscribeStatus;
+    private void changeSessionStatus(SessionStatus sessionStatus) {
+        this.sessionStatus = sessionStatus;
     }
 
     private Subscriber subscribeUser(NsUser nsUser) {
@@ -195,8 +195,8 @@ public class Session {
     }
 
 
-    private void confirmSubscribeStatus() {
-        if (this.subscribeStatus != SubscribeStatus.WAIT) {
+    private void confirmSessionStatus() {
+        if (this.sessionStatus != sessionStatus.WAIT) {
             throw new IllegalArgumentException(SUBSCRIBE_STATUS_NOT_WAIT_MESSAGE);
         }
     }
