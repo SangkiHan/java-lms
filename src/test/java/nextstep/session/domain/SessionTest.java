@@ -94,6 +94,7 @@ public class SessionTest {
 
         Session session = Session.createFree(1L, "테스트강의", List.of(image), PickSession.NON_PICK, startDate, endDate);
         session.processSession();
+        session.recruitSession();
 
         NsUser user = new NsUser(1L, "javajigi", "password", "name", "javajigi@slipp.net");
 
@@ -104,9 +105,9 @@ public class SessionTest {
         assertThat(session.getSubscribeCount()).isEqualTo(1);
     }
 
-    @DisplayName("강의를 신청할 시 종료된 강의하면 예외가 발생한다")
+    @DisplayName("강의를 신청할 시 종료된 강의이면 예외가 발생한다")
     @Test
-    void subscribeSessionNotWaitThrowExceptionTest() {
+    void subscribeSessionClosedThrowExceptionTest() {
         //given
         LocalDateTime startDate = LocalDateTime.parse("2023-04-05T00:00:00");
         LocalDateTime endDate = LocalDateTime.parse("2023-05-05T00:00:00");
@@ -135,6 +136,7 @@ public class SessionTest {
         NsUser user = new NsUser(1L, "javajigi", "password", "name", "javajigi@slipp.net");
         Payment payment = new Payment(1L, 1L, 1L, 700000);
         session.processSession();
+        session.recruitSession();
 
         //when, then
         assertThatThrownBy(() -> session.subscribe(user, payment))
@@ -152,6 +154,7 @@ public class SessionTest {
         Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
         Session session = Session.createPaid(1L, "테스트강의", List.of(image), PickSession.NON_PICK, 100, 800000, startDate, endDate);
         session.processSession();
+        session.recruitSession();
         NsUser user = new NsUser(1L, "javajigi", "password", "name", "javajigi@slipp.net");
 
         //when, then
@@ -175,6 +178,8 @@ public class SessionTest {
         Payment payment = new Payment(1L, 1L, 1L, 800000);
 
         session.processSession();
+        session.recruitSession();
+
         session.subscribe(user1, payment);
 
         //when, then
@@ -203,6 +208,25 @@ public class SessionTest {
         assertThatThrownBy(() -> session.subscribe(user2))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 인원은 강의승인을 받지 않았습니다.");
+    }
+
+    @DisplayName("강의를 신청할 시 비모집중인 강의이면 예외가 발생한다")
+    @Test
+    void subscribeSessionNotRecuitThrowExceptionTest() {
+        //given
+        LocalDateTime startDate = LocalDateTime.parse("2023-04-05T00:00:00");
+        LocalDateTime endDate = LocalDateTime.parse("2023-05-05T00:00:00");
+
+        Image image = new Image(1L, "테스트이미지.jpg", 300, 200, 1);
+        Session session = Session.createPaid(1L, "테스트강의", List.of(image), PickSession.NON_PICK, 100, 800000, startDate, endDate);
+        session.nonRecruitSession();
+        Payment payment = new Payment(1L, 1L, 1L, 800000);
+        NsUser user = new NsUser(1L, "javajigi", "password", "name", "javajigi@slipp.net");
+
+        //when, then
+        assertThatThrownBy(() -> session.subscribe(user, payment))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("모집이 종료된 강의입니다.");
     }
 
 }

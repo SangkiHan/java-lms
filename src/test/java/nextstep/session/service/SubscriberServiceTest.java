@@ -35,6 +35,7 @@ class SubscriberServiceTest extends TestSupport {
         sessionService.save(session);
 
         sessionService.changeSubscribeStatus(1L, SessionStatus.PROCESS);
+
         subscriberService.subscribe(1L, 1L);
 
         Session findSession = sessionService.findById(1L);
